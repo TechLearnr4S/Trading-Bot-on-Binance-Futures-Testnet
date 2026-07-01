@@ -7,6 +7,7 @@
   [![Try it Live](https://img.shields.io/badge/🚀_Try_it_Live_Now-FF4B4B?style=for-the-badge)](https://trading-bot-on-binance-futures-testnet-i3irbfqwe9sgq7dmfontg7.streamlit.app/)
   
   <br/>
+
   [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg?logo=python&logoColor=white)](https://python.org)
   [![Streamlit](https://img.shields.io/badge/Streamlit-1.36-FF4B4B.svg?logo=streamlit&logoColor=white)](https://streamlit.io)
   [![License](https://img.shields.io/badge/License-MIT-green.svg)](#license)
