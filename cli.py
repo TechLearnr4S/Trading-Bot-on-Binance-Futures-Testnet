@@ -130,7 +130,7 @@ def run():
         sys.exit(1)
 
     print(format_order_response(response))
-    print("\n✓ Order placed successfully.")
+    print("\n[SUCCESS] Order placed successfully.")
     logger.info("CLI session completed for %s %s %s", order_type, side, symbol)
 
 

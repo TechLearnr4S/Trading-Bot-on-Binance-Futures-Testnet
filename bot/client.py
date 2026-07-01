@@ -21,9 +21,21 @@ class BinanceClient:
             "X-MBX-APIKEY": self.api_key,
             "Content-Type": "application/x-www-form-urlencoded",
         })
+        self.time_offset = 0
+        self._sync_time()
+
+    def _sync_time(self):
+        try:
+            res = self.session.get(f"{self.base_url}/fapi/v1/time", timeout=5).json()
+            server_time = res.get("serverTime", int(time.time() * 1000))
+            local_time = int(time.time() * 1000)
+            self.time_offset = server_time - local_time
+            logger.debug("Time offset set to %s ms", self.time_offset)
+        except Exception as e:
+            logger.warning("Could not sync time: %s", e)
 
     def _sign(self, params: dict) -> dict:
-        params["timestamp"] = int(time.time() * 1000)
+        params["timestamp"] = int(time.time() * 1000) + self.time_offset
         query_string = urlencode(params)
         signature = hmac.new(
             self.api_secret.encode("utf-8"),
