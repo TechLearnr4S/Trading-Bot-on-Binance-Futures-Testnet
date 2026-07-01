@@ -101,3 +101,18 @@ with st.container():
                     
             except Exception as e:
                 st.error(f"❌ Failed to place order: {e}")
+
+st.markdown("---")
+st.subheader("🖥️ System Logs")
+with st.expander("View Backend Terminal Logs", expanded=False):
+    log_path = "logs/trading_bot.log"
+    if os.path.exists(log_path):
+        try:
+            with open(log_path, "r", encoding="utf-8") as f:
+                logs = f.readlines()
+                recent_logs = "".join(logs[-20:])
+                st.code(recent_logs, language="text")
+        except Exception as e:
+            st.error(f"Could not read logs: {e}")
+    else:
+        st.info("No logs generated yet.")
