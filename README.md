@@ -1,157 +1,148 @@
-# Trading Bot — Binance Futures Testnet
+<div align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Binance_Logo.svg" alt="Binance Logo" width="120" />
+  
+  <h1>Binance Futures Testnet Trading Bot</h1>
+  <p>A professional, lightweight, and responsive trading bot for the Binance Futures Testnet (USDT-M), featuring both a powerful CLI and a beautiful Web Dashboard.</p>
 
-A command-line trading bot for placing **Market**, **Limit**, and **Stop-Limit** orders on the [Binance Futures Testnet](https://testnet.binancefuture.com) (USDT-M perpetuals).
+  [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg?logo=python&logoColor=white)](https://python.org)
+  [![Streamlit](https://img.shields.io/badge/Streamlit-1.36-FF4B4B.svg?logo=streamlit&logoColor=white)](https://streamlit.io)
+  [![License](https://img.shields.io/badge/License-MIT-green.svg)](#license)
+</div>
+
+<br />
+
+## 🚀 Features
+
+- **Multi-Interface Support:** Control the bot via a lightning-fast Command Line Interface (CLI) or a fully responsive Web UI.
+- **Multiple Order Types:** Native support for `MARKET`, `LIMIT`, and `STOP-LIMIT` orders.
+- **Smart Time Synchronization:** Automatically offsets local machine timestamps to perfectly match Binance servers, preventing `-1021 Timestamp Ahead` errors.
+- **Robust Error Handling & Validation:** Built-in validation for symbols, quantities, and prices before network requests are ever sent.
+- **Detailed Logging:** Clean console output paired with rotating file handlers (keeps recent API trace logs without eating up disk space).
+- **Secure Configuration:** Credential management handled entirely via `.env` variables. No hardcoded keys.
 
 ---
 
-## Project Structure
+## 🛠️ Project Architecture
 
-```
+This project is designed with modularity in mind, cleanly separating API communication, business logic, and presentation layers.
+
+```text
 trading_bot/
-├── bot/
-│   ├── __init__.py
-│   ├── client.py          # Binance REST API wrapper (signing, HTTP)
-│   ├── orders.py          # Order placement logic and output formatters
-│   ├── validators.py      # Input validation with clear error messages
-│   └── logging_config.py  # Rotating file + console log handler setup
-├── cli.py                 # CLI entry point (argparse)
-├── .env.example           # Credential template
-├── .gitignore
-├── requirements.txt
-└── README.md
+├── app.py                 # Streamlit Web UI Entry Point
+├── cli.py                 # Command-Line Entry Point (argparse)
+├── bot/                   # Core Logic Module
+│   ├── client.py          # Binance REST HTTP wrapper & HMAC SHA-256 signing
+│   ├── orders.py          # Execution logic and response formatting
+│   ├── validators.py      # Strict input sanitization rules
+│   └── logging_config.py  # Centralized logger configuration
+├── logs/                  # Auto-generated API trace logs
+├── .env.example           # Environment template
+└── requirements.txt       # Project dependencies
 ```
 
 ---
 
-## Setup
+## ⚙️ Setup Instructions
 
-### 1. Get Testnet API Credentials
+### 1. Generate Testnet Credentials
+1. Visit the [Binance Futures Testnet](https://testnet.binancefuture.com).
+2. Log in (using GitHub/Email) and click **"Start demo trading"**.
+3. Click your **Profile Icon** (top right) $\rightarrow$ **API Management**.
+4. Generate a **System Generated** key pair. Keep the *API Key* and *Secret Key* handy.
 
-1. Go to [https://testnet.binancefuture.com](https://testnet.binancefuture.com) and sign in with GitHub.
-2. Navigate to **API Key** section and generate a key pair.
-3. Copy the **API Key** and **Secret Key**.
-
-### 2. Clone and Install
-
+### 2. Clone & Install
 ```bash
-git clone <your-repo-url>
-cd trading_bot
+# Clone the repository
+git clone https://github.com/TechLearnr4S/Trading-Bot-on-Binance-Futures-Testnet.git
+cd Trading-Bot-on-Binance-Futures-Testnet
 
+# Create and activate a virtual environment
 python -m venv .venv
 
-# Windows
-.venv\Scripts\activate
-
-# macOS/Linux
+# On Windows:
+.\.venv\Scripts\activate
+# On macOS/Linux:
 source .venv/bin/activate
 
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 3. Configure Credentials
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and fill in your testnet keys:
-
+### 3. Configure Environment
+Rename `.env.example` to `.env` (or create a new `.env` file) and paste your credentials:
 ```env
 BINANCE_API_KEY=your_testnet_api_key_here
 BINANCE_API_SECRET=your_testnet_api_secret_here
 ```
-
-> **Never commit `.env` to version control.** It is already in `.gitignore`.
+> ⚠️ **Note:** `.env` is explicitly ignored by `.gitignore` to prevent accidental credential leaks.
 
 ---
 
-## How to Run
+## 💻 How to Run: Web Dashboard (Recommended)
 
-All commands are run from the project root directory.
+The project includes a stunning, mobile-responsive Web UI powered by Streamlit.
 
-### Place a Market Order
+```bash
+streamlit run app.py
+```
+*Your browser will automatically open to `http://localhost:8501`.*
 
+<div align="center">
+  <i>The Web UI automatically adapts its layout for desktop and mobile displays.</i>
+</div>
+
+---
+
+## ⌨️ How to Run: Command Line (CLI)
+
+For headless environments or automated scripting, use the powerful CLI. All commands must be run from the project root.
+
+**1. Market Order:**
 ```bash
 python cli.py --symbol BTCUSDT --side BUY --type MARKET --quantity 0.01
 ```
 
-### Place a Limit Order
-
+**2. Limit Order:**
 ```bash
 python cli.py --symbol BTCUSDT --side SELL --type LIMIT --quantity 0.01 --price 50000
 ```
 
-### Place a Stop-Limit Order (Bonus)
-
+**3. Stop-Limit Order:**
 ```bash
 python cli.py --symbol BTCUSDT --side SELL --type STOP --quantity 0.01 --price 49000 --stop-price 49500
 ```
 
-### Arguments
+### CLI Arguments Reference
 
 | Argument       | Required            | Description                                         |
 |----------------|---------------------|-----------------------------------------------------|
-| `--symbol`     | Yes                 | USDT-M futures symbol, e.g. `BTCUSDT`, `ETHUSDT`   |
-| `--side`       | Yes                 | `BUY` or `SELL`                                     |
-| `--type`       | Yes                 | `MARKET`, `LIMIT`, or `STOP`                        |
-| `--quantity`   | Yes                 | Order size in base asset units                      |
-| `--price`      | For LIMIT and STOP  | Limit execution price                               |
-| `--stop-price` | For STOP only       | Trigger price for the stop condition                |
+| `--symbol`     | **Yes**             | Trading pair symbol (e.g. `BTCUSDT`, `ETHUSDT`)     |
+| `--side`       | **Yes**             | Order direction: `BUY` or `SELL`                    |
+| `--type`       | **Yes**             | Order type: `MARKET`, `LIMIT`, or `STOP`            |
+| `--quantity`   | **Yes**             | Order size in base asset units (e.g., `0.01` BTC)   |
+| `--price`      | For LIMIT & STOP    | Limit execution price (USDT)                        |
+| `--stop-price` | For STOP only       | Trigger price for the stop condition (USDT)         |
 
 ---
 
-## Sample Output
+## 🔍 Assumptions & Limitations
 
-```
---- Order Request ---
-  symbol      : BTCUSDT
-  side        : BUY
-  type        : MARKET
-  quantity    : 0.01
-
---- Order Response ---
-  Order ID      : 3713190475
-  Symbol        : BTCUSDT
-  Side          : BUY
-  Type          : MARKET
-  Status        : FILLED
-  Orig Qty      : 0.01
-  Executed Qty  : 0.01
-  Avg Price     : 43215.60000
-
-✓ Order placed successfully.
-```
+1. **Testnet Only:** Hardcoded to `https://testnet.binancefuture.com`. Do not use these exact endpoints for production/live trading.
+2. **USDT-M Futures:** Only USDT-Margined perpetual contracts are supported (symbols must end in `USDT`).
+3. **Quantity Precision:** Binance enforces specific precision/step-sizes for quantities and prices per asset. If you provide an overly precise number (e.g., `0.012345`), the exchange may reject the order.
+4. **Time in Force:** All limit and stop orders default to `GTC` (Good Till Canceled).
 
 ---
 
-## Logging
+## 📝 Logging System
 
-All API requests and responses are logged to `logs/trading_bot.log` with timestamps.  
-The log file rotates at 5 MB and keeps the last 3 files.
-
-```
-2025-01-15 14:32:10 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order | params: {symbol: BTCUSDT, side: BUY, ...}
-2025-01-15 14:32:11 | DEBUG    | bot.client | Response [200]: {"orderId": 3713190475, ...}
-2025-01-15 14:32:11 | INFO     | bot.orders | MARKET order placed successfully | orderId=3713190475
-```
+API request/response payloads and critical errors are automatically persisted to `logs/trading_bot.log`. 
+- **Console Output:** Restricted to `WARNING` and above (keeps your terminal clean).
+- **File Output:** Logs down to `DEBUG` level (includes full JSON payloads).
+- **Rotation:** Automatically rotates logs at 5MB, retaining the last 3 archives.
 
 ---
 
-## Assumptions
-
-- Only **USDT-M perpetual futures** symbols are supported (must end in `USDT`).
-- Quantity precision depends on the symbol's trading rules on Binance. If you receive a precision error, adjust your quantity accordingly (e.g., `0.001` instead of `0.0012345`).
-- STOP orders use Binance's `STOP` type (stop-limit), which requires both a `--price` (limit) and `--stop-price` (trigger).
-- Credentials are loaded from `.env` or environment variables at startup.
-
----
-
-## Error Handling
-
-| Scenario                    | Behavior                                           |
-|-----------------------------|----------------------------------------------------|
-| Missing/invalid credentials | Exits with a clear message before any API call     |
-| Invalid symbol format       | Validation error printed to stderr, exits          |
-| API error response          | Error code and message logged and printed          |
-| Network timeout             | Friendly timeout message, exits with code 1        |
-| Missing required arguments  | argparse prints usage hint automatically           |
+<div align="center">
+  <i>Built with ❤️ using Python and Streamlit.</i>
+</div>
