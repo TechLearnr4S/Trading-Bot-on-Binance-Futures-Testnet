@@ -88,6 +88,8 @@ streamlit run app.py
 *Your browser will automatically open to `http://localhost:8501`.*
 
 <div align="center">
+  <img src="./TradingBot.jpg" alt="Streamlit Web UI Mockup" width="100%" />
+  <br/><br/>
   <i>The Web UI automatically adapts its layout for desktop and mobile displays.</i>
 </div>
 
