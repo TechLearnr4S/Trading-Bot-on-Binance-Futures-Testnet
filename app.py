@@ -8,9 +8,7 @@ from dotenv import load_dotenv
 from bot.client import BinanceClient
 from bot.orders import place_limit_order, place_market_order, place_stop_limit_order
 
-# ---------------------------------------------------------
-# Page Configuration (Must be the first Streamlit command)
-# ---------------------------------------------------------
+
 st.set_page_config(
     page_title="Testnet Trading Bot",
     page_icon="📈",
@@ -18,9 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ---------------------------------------------------------
-# Backend Initialization
-# ---------------------------------------------------------
+
 @st.cache_resource
 def get_client():
     load_dotenv()
@@ -33,9 +29,7 @@ def get_client():
 
 client = get_client()
 
-# ---------------------------------------------------------
-# UI Layout (Fully Responsive)
-# ---------------------------------------------------------
+
 st.title("📈 Binance Testnet Bot")
 st.markdown("Easily place orders on the USDT-M Futures Testnet.")
 
@@ -47,20 +41,19 @@ if not client:
     st.stop()
 
 with st.container():
-    # Top Row: Symbol
+   
     symbol = st.selectbox(
         "Trading Pair (Symbol)",
         options=["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT"],
         index=0
     )
 
-    # Middle Row: Side, Type, Quantity
-    # Streamlit columns automatically stack on mobile devices!
+   
     col1, col2, col3 = st.columns(3)
     
     with col1:
         side = st.selectbox("Order Side", ["BUY", "SELL"])
-        # Give it a color hint based on side
+        
         color = "green" if side == "BUY" else "red"
         st.markdown(f"<h3 style='text-align: center; color: {color}; margin-top:-10px;'>{side}</h3>", unsafe_allow_html=True)
         
@@ -70,7 +63,7 @@ with st.container():
     with col3:
         quantity = st.number_input("Quantity", value=0.01, step=0.01, min_value=0.001)
 
-    # Conditional inputs based on order type
+    
     price = None
     stop_price = None
 
@@ -82,8 +75,7 @@ with st.container():
 
     st.markdown("---")
     
-    # Action Button
-    # Streamlit handles button sizing natively for touch targets
+    
     if st.button("🚀 Execute Order", type="primary", use_container_width=True):
         if not symbol:
             st.warning("Please enter a valid symbol.")
@@ -100,7 +92,7 @@ with st.container():
                 
                 st.success("✅ Order placed successfully!")
                 
-                # Show key details in a clean responsive expander rather than dumping JSON
+                
                 with st.expander("View Order Details", expanded=True):
                     st.write(f"**Order ID:** `{response.get('orderId')}`")
                     st.write(f"**Status:** `{response.get('status')}`")
